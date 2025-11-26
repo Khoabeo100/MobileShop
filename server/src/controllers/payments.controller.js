@@ -344,10 +344,86 @@ class PaymentsController {
         }).send(res);
     }
 
+    // async getPaymentsByUserId(req, res) {
+    //     const { id } = req.user;
+    //     const payments = await modelPayments.findAll({ where: { userId: id } });
+    //     const findCoupon = await modelCoupon.findOne({ where: { nameCoupon: payments[0].nameCoupon } });
+
+    //     // Group payments by idPayment
+    //     const paymentGroups = {};
+
+    //     for (const payment of payments) {
+    //         if (!paymentGroups[payment.idPayment]) {
+    //             paymentGroups[payment.idPayment] = {
+    //                 id: payment.id,
+    //                 idPayment: payment.idPayment,
+    //                 userId: payment.userId,
+    //                 createdAt: payment.createdAt,
+    //                 updatedAt: payment.updatedAt,
+    //                 fullName: payment.fullName,
+    //                 phoneNumber: payment.phoneNumber,
+    //                 address: payment.address,
+    //                 nameCoupon: payment.nameCoupon,
+    //                 typePayment: payment.typePayment,
+    //                 status: payment.status,
+    //                 note: payment.note,
+    //                 email: payment.email,
+    //                 totalPrice: 0,
+    //                 items: [],
+    //             };
+    //         }
+
+    //         // Add product to this group
+    //         const product = await modelProduct.findOne({ where: { id: payment.productId } });
+    //         const previewProduct = await modelPreviewProduct.findOne({
+    //             where: { productId: payment.productId, userId: id },
+    //         });
+    //         paymentGroups[payment.idPayment].items.push({
+    //             productId: payment.productId,
+    //             quantity: payment.quantity,
+    //             price: payment.totalPrice,
+    //             product: product,
+    //             note: payment.note,
+    //             email: payment.email,
+    //             previewProduct: previewProduct,
+    //         });
+
+    //         // Sum total price
+    //         paymentGroups[payment.idPayment].totalPrice += payment.totalPrice;
+    //         paymentGroups[payment.idPayment].totalPrice =
+    //             findCoupon.discount > 0
+    //                 ? paymentGroups[payment.idPayment].totalPrice -
+    //                   (paymentGroups[payment.idPayment].totalPrice * findCoupon.discount) / 100
+    //                 : paymentGroups[payment.idPayment].totalPrice;
+    //     }
+
+    //     // Convert to array
+    //     const groupedPayments = Object.values(paymentGroups);
+
+    //     new OK({
+    //         message: 'Get payments by user id success',
+    //         metadata: groupedPayments,
+    //     }).send(res);
+    // }
+
     async getPaymentsByUserId(req, res) {
         const { id } = req.user;
         const payments = await modelPayments.findAll({ where: { userId: id } });
-        const findCoupon = await modelCoupon.findOne({ where: { nameCoupon: payments[0].nameCoupon } });
+
+        // Nếu user chưa có đơn nào thì trả luôn mảng rỗng, tránh payments[0] = undefined
+        if (!payments || payments.length === 0) {
+            return new OK({
+                message: 'Get payments by user id success',
+                metadata: [],
+            }).send(res);
+        }
+
+        // Chỉ tìm coupon nếu có nameCoupon
+        let coupon = null;
+        const couponName = payments[0]?.nameCoupon;
+        if (couponName) {
+            coupon = await modelCoupon.findOne({ where: { nameCoupon: couponName } });
+        }
 
         // Group payments by idPayment
         const paymentGroups = {};
@@ -378,6 +454,7 @@ class PaymentsController {
             const previewProduct = await modelPreviewProduct.findOne({
                 where: { productId: payment.productId, userId: id },
             });
+
             paymentGroups[payment.idPayment].items.push({
                 productId: payment.productId,
                 quantity: payment.quantity,
@@ -388,16 +465,20 @@ class PaymentsController {
                 previewProduct: previewProduct,
             });
 
-            // Sum total price
+            // Cộng tổng trước
             paymentGroups[payment.idPayment].totalPrice += payment.totalPrice;
-            paymentGroups[payment.idPayment].totalPrice =
-                findCoupon.discount > 0
-                    ? paymentGroups[payment.idPayment].totalPrice -
-                      (paymentGroups[payment.idPayment].totalPrice * findCoupon.discount) / 100
-                    : paymentGroups[payment.idPayment].totalPrice;
         }
 
-        // Convert to array
+        // Áp dụng giảm giá sau khi đã cộng xong (nếu có coupon)
+        if (coupon && coupon.discount > 0) {
+            for (const group of Object.values(paymentGroups)) {
+                if (group.nameCoupon) {
+                    group.totalPrice =
+                        group.totalPrice - (group.totalPrice * coupon.discount) / 100;
+                }
+            }
+        }
+
         const groupedPayments = Object.values(paymentGroups);
 
         new OK({
@@ -405,6 +486,7 @@ class PaymentsController {
             metadata: groupedPayments,
         }).send(res);
     }
+
 
     async cancelPayment(req, res) {
         const { idPayment } = req.body;
