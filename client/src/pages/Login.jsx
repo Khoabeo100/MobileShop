@@ -57,10 +57,7 @@ function Login() {
                     <div className="max-w-lg">
                         {/* Logo */}
                         <div className="flex items-center mb-8 space-x-3">
-                            <img
-                                src="https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsiZGF0YSI6OTE3NDg5LCJwdXIiOiJibG9iX2lkIn19--b3fa056d83b06e9e09f18e0ad49b01eb17d110ec/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJwbmciLCJyZXNpemVfdG9fbGltaXQiOlszMDAsMzAwXX0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--e1d036817a0840c585f202e70291f5cdd058753d/cellphones-logo.png"
-                                alt=""
-                            />
+                            <img src="/src/assets/images/logorm.png" alt="" />
                         </div>
 
                         {/* Title */}

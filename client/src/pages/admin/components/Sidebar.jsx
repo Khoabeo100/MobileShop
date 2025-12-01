@@ -60,7 +60,7 @@ function Sidebar({ collapsed, token, activeTab, setActiveTab }) {
                     {!collapsed && (
                         <span className="flex items-center gap-3">
                             <LaptopOutlined className="text-2xl" />
-                            <span className="text-xl tracking-wide">LapTop Shop</span>
+                            <span className="text-xl tracking-wide">KB Mobile</span>
                         </span>
                     )}
                     {collapsed && (

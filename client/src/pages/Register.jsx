@@ -54,7 +54,7 @@ export default function Register() {
                     <div className="text-center mb-8">
                         <img
                             className="w-[100px] h-[100px] mx-auto"
-                            src="https://cdn-static.smember.com.vn/_next/static/media/register-ant.b75b959d.png"
+                            src="/src/assets/images/res.jpg"
                             alt=""
                         />
                         <h1 className="text-2xl font-bold text-gray-800 mb-2">Đăng ký</h1>
