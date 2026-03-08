@@ -157,7 +157,7 @@ function Header() {
                 {/* Logo */}
                 <Link to="/">
                     <div className="flex-shrink-0">
-                        <img src="/src/assets/images/logo.png" alt="Logo" />
+                        <img src="/src/assets/images/xoanentrang.png" alt="Logo" />
                     </div>
                 </Link>
 

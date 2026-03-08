@@ -3,23 +3,23 @@ import Slider from 'react-slick';
 function BrandBanner2() {
     const banners = [
         {
-            img: 'https://cdni.dienthoaivui.com.vn/690x300,q100/https://dashboard.dienthoaivui.com.vn/uploads/wp-content/uploads/images/439b5c7c7ad6d52c12d8858999fb5ecc.gif',
+            img: '/src/assets/images/SPP.jpg',
             alt: 'ShopeePay',
         },
         {
-            img: 'https://cdni.dienthoaivui.com.vn/690x300,q100/https://dashboard.dienthoaivui.com.vn/uploads/wp-content/uploads/images/439b5c7c7ad6d52c12d8858999fb5ecc.gif',
+            img: '/src/assets/images/Kredivo.jpg',
             alt: 'Kredivo',
         },
         {
-            img: 'https://cdni.dienthoaivui.com.vn/690x300,q100/https://dashboard.dienthoaivui.com.vn/uploads/wp-content/uploads/images/439b5c7c7ad6d52c12d8858999fb5ecc.gif',
+            img: '/src/assets/images/SPP.jpg',
             alt: 'Trả góp',
         },
         {
-            img: 'https://cdni.dienthoaivui.com.vn/690x300,q100/https://dashboard.dienthoaivui.com.vn/uploads/wp-content/uploads/images/439b5c7c7ad6d52c12d8858999fb5ecc.gif',
+            img: '/src/assets/images/Kredivo.jpg',
             alt: 'Trả góp',
         },
         {
-            img: 'https://cdni.dienthoaivui.com.vn/690x300,q100/https://dashboard.dienthoaivui.com.vn/uploads/wp-content/uploads/images/439b5c7c7ad6d52c12d8858999fb5ecc.gif',
+            img: '/src/assets/images/SPP.jpg',
             alt: 'Trả góp',
         },
     ];
