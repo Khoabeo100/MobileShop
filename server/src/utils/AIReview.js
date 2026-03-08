@@ -1,9 +1,12 @@
-const  Groq  = require('groq-sdk');
+require('dotenv').config();
+const Groq = require('groq-sdk');
 const product = require('../models/products.model'); // Sequelize model
 
 // Khởi tạo client Groq
-const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
+// const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const client = new Groq({
+    apiKey: process.env.GROQ_API_KEY,
+});
 // Mapping mục đích sử dụng
 const purposeMapping = {
     gaming: {
@@ -146,15 +149,29 @@ async function analyzeProductForPurpose(reviewData) {
         `;
 
         // Gọi AI Groq SDK
-        const result = await client.generate({
-            model: 'groq-1.5',
-            input: prompt,
-            modalities: ['text'],
+        // const result = await client.generate({
+        //     model: 'groq-1.5',
+        //     input: prompt,
+        //     modalities: ['text'],
+        // });
+        const result = await client.chat.completions.create({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'Bạn là chuyên gia đánh giá điện thoại.',
+                },
+                {
+                    role: 'user',
+                    content: prompt,
+                },
+            ],
+            temperature: 0.7,
         });
-
         return {
             success: true,
-            analysis: result.output_text || result.output?.[0]?.content || '', // tùy phiên bản SDK
+            // analysis: result.output_text || result.output?.[0]?.content || '', // tùy phiên bản SDK
+            analysis: result.choices[0].message.content,
             purpose: purposeInfo.name,
             productName: productData.nameProduct,
             productId,
