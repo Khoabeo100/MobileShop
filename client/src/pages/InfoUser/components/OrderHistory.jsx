@@ -392,12 +392,12 @@ function OrderHistory() {
                                 viewOrder?.status === 'success'
                                     ? 'green'
                                     : viewOrder?.status === 'failed'
-                                    ? 'red'
-                                    : viewOrder?.status === 'shipping'
-                                    ? 'geekblue'
-                                    : viewOrder?.status === 'confirm'
-                                    ? 'blue'
-                                    : 'orange'
+                                      ? 'red'
+                                      : viewOrder?.status === 'shipping'
+                                        ? 'geekblue'
+                                        : viewOrder?.status === 'confirm'
+                                          ? 'blue'
+                                          : 'orange'
                             }
                         >
                             {viewOrder?.status === 'success' && 'Thành công'}

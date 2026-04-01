@@ -5,15 +5,20 @@ import { CreditCard, Truck, ShoppingBag, ArrowLeft, Check } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { requestCreatePayment, requestGetInfoCart } from '../config/request';
+import { requestAuth } from '../config/request';
+import { useStore } from '../hooks/useStore';
 
 function CheckOut() {
     const [form] = Form.useForm();
     const [cartData, setCartData] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [discount, setDiscount] = useState(0);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cod');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [isFilled, setIsFilled] = useState(false);
+    const { dataUser } = useStore();
 
     useEffect(() => {
         document.title = 'Thanh toán';
@@ -29,13 +34,49 @@ function CheckOut() {
         fetchInfoCart();
     }, []);
 
+    useEffect(() => {
+        if (dataUser && !isFilled) {
+            form.setFieldsValue({
+                fullName: dataUser.fullName,
+                email: dataUser.email,
+                phoneNumber: dataUser.phone,
+                address: dataUser.address,
+            });
+            setIsFilled(true);
+        }
+    }, [dataUser, isFilled, form]);
+
+    // const calculateSubtotal = () => {
+    //     return cartData.reduce((total, item) => total + item.totalPrice, 0) || 0;
+    // };
+
     const calculateSubtotal = () => {
-        return cartData.reduce((total, item) => total + item.totalPrice, 0) || 0;
+        return cartData.reduce((total, item) => {
+            const product = item.product;
+
+            const discountedPrice =
+                product.discountProduct > 0
+                    ? product.priceProduct * (1 - product.discountProduct / 100)
+                    : product.priceProduct;
+
+            return total + discountedPrice * item.quantity;
+        }, 0);
     };
 
+    // const calculateDiscount = () => {
+    //     if (!selectedCoupon) return 0;
+
+    //     const subtotal = calculateSubtotal();
+    //     return subtotal * (selectedCoupon.discount / 100);
+    // };
+
     const calculateDiscount = () => {
-        return (totalPrice * discount) / 100;
+        const subtotal = calculateSubtotal();
+        return (subtotal * discount) / 100;
     };
+    // const calculateDiscount = () => {
+    //     return (totalPrice * discount) / 100;
+    // };
 
     const calculateTotal = () => {
         return calculateSubtotal() - calculateDiscount();
@@ -51,7 +92,8 @@ function CheckOut() {
             const data = {
                 ...values,
                 typePayment: selectedPaymentMethod,
-                totalAmount: totalPrice,
+                // totalAmount: totalPrice,
+                totalAmount: calculateTotal(),
             };
             if (selectedPaymentMethod === 'momo') {
                 const res = await requestCreatePayment(data);
@@ -116,18 +158,7 @@ function CheckOut() {
                         <Card className="shadow-sm">
                             <h2 className="text-lg font-bold mb-4">Thông tin thanh toán</h2>
 
-                            <Form
-                                form={form}
-                                layout="vertical"
-                                onFinish={handleSubmit}
-                                initialValues={{
-                                    fullName: '',
-                                    email: '',
-                                    phoneNumber: '',
-                                    address: '',
-                                    note: '',
-                                }}
-                            >
+                            <Form form={form} layout="vertical" onFinish={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <Form.Item
                                         name="fullName"
@@ -265,8 +296,8 @@ function CheckOut() {
                                             selectedPaymentMethod === 'momo'
                                                 ? 'MoMo'
                                                 : selectedPaymentMethod === 'vnpay'
-                                                ? 'VNPay'
-                                                : 'QR'
+                                                  ? 'VNPay'
+                                                  : 'QR'
                                         } để hoàn tất giao dịch sau khi xác nhận đơn hàng.`}
                                         type="info"
                                         showIcon
@@ -319,8 +350,48 @@ function CheckOut() {
                                                 </p>
                                                 <div className="flex justify-between items-center mt-1">
                                                     <span className="text-xs text-gray-500">SL: {item.quantity}</span>
-                                                    <span className="text-sm font-medium text-red-600">
+                                                    <span>
+                                                        {item.product.discountProduct > 0 && (
+                                                            <div className="flex items-center mt-1">
+                                                                <span className="bg-red-100 text-red-500 text-xs px-1.5 py-0.5 rounded">
+                                                                    Giảm {item.product.discountProduct}%
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </span>
+                                                    {/* <span className="text-sm font-medium text-red-600">
                                                         {item.totalPrice.toLocaleString()}₫
+                                                    </span> */}
+                                                    <span className="text-sm font-medium text-red-600">
+                                                        {(() => {
+                                                            const product = item.product;
+
+                                                            const discountedPrice =
+                                                                product.discountProduct > 0
+                                                                    ? product.priceProduct *
+                                                                      (1 - product.discountProduct / 100)
+                                                                    : product.priceProduct;
+
+                                                            return (
+                                                                <div>
+                                                                    <div className="font-semibold text-red-600">
+                                                                        {(
+                                                                            discountedPrice * item.quantity
+                                                                        ).toLocaleString()}
+                                                                        ₫
+                                                                    </div>
+
+                                                                    {product.discountProduct > 0 && (
+                                                                        <div className="text-gray-400 line-through text-sm">
+                                                                            {(
+                                                                                product.priceProduct * item.quantity
+                                                                            ).toLocaleString()}
+                                                                            ₫
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })()}
                                                     </span>
                                                 </div>
                                             </div>

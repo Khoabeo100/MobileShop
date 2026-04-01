@@ -110,8 +110,20 @@ function CartUser() {
         } catch (error) {}
     };
 
+    // const calculateSubtotal = () => {
+    //     return cart.reduce((total, item) => total + item.totalPrice, 0);
+    // };
     const calculateSubtotal = () => {
-        return cart.reduce((total, item) => total + item.totalPrice, 0);
+        return cart.reduce((total, item) => {
+            const product = item.product;
+
+            const discountedPrice =
+                product.discountProduct > 0
+                    ? product.priceProduct * (1 - product.discountProduct / 100)
+                    : product.priceProduct;
+
+            return total + discountedPrice * item.quantity;
+        }, 0);
     };
 
     const calculateDiscount = () => {
@@ -153,7 +165,7 @@ function CartUser() {
                             </div>
                         )}
                         <div className="text-gray-400 text-sm">
-                            <span>Số lượng: {product.stockProduct}</span>
+                            <span>Số lượng sẵn: {product.stockProduct}</span>
                         </div>
                     </div>
                 </div>
@@ -194,12 +206,29 @@ function CartUser() {
                 />
             ),
         },
+        // {
+        //     title: 'Thành tiền',
+        //     key: 'total',
+        //     render: (_, record) => (
+        //         <div className="font-semibold text-red-600">{record.totalPrice.toLocaleString()}₫</div>
+        //     ),
+        // },
+
         {
             title: 'Thành tiền',
             key: 'total',
-            render: (_, record) => (
-                <div className="font-semibold text-red-600">{record.totalPrice.toLocaleString()}₫</div>
-            ),
+            render: (_, record) => {
+                const product = record.product;
+
+                const discountedPrice =
+                    product.discountProduct > 0
+                        ? product.priceProduct * (1 - product.discountProduct / 100)
+                        : product.priceProduct;
+
+                const total = discountedPrice * record.quantity;
+
+                return <div className="font-semibold text-red-600">{total.toLocaleString()}₫</div>;
+            },
         },
         {
             title: 'Thao tác',

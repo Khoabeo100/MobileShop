@@ -15,6 +15,10 @@ export const requestReview = async (data) => {
 };
 
 const apiUser = '/api/user';
+// export const requestGetUserInfo = async () => {
+//     const res = await apiClient.get(`${apiUser}/info`);
+//     return res.data;
+// };
 
 export const requestRegister = async (data) => {
     const res = await request.post(`${apiUser}/register`, data);
