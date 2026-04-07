@@ -62,12 +62,32 @@ class PaymentsController {
             throw new BadRequestError('Vui lòng cập nhật thông tin đơn hàng');
         }
 
-        let totalPrice = findCart.reduce((acc, item) => acc + item.totalPrice, 0);
+        let totalPrice = 0;
+        for (const item of findCart) {
+            const product = await modelProduct.findOne({ where: { id: item.productId } });
+            if (product) {
+                const discountedPrice =
+                    product.discountProduct > 0
+                        ? product.priceProduct * (1 - product.discountProduct / 100)
+                        : product.priceProduct;
+                totalPrice += discountedPrice * item.quantity;
+            }
+        }
         let discount = 0;
         if (findCart[0].nameCoupon) {
             const findCounpon = await modelCoupon.findOne({ where: { nameCoupon: findCart[0].nameCoupon } });
             discount = findCounpon.discount;
         }
+
+        //xử lý thanh toán theo checkout
+        // const product = await modelProduct.findOne({ where: { id: item.productId } });
+
+        // const unitPrice = product.priceProduct;
+
+        // const finalPrice = product.discountProduct > 0 ? unitPrice * (1 - product.discountProduct / 100) : unitPrice;
+
+        // const totalPrice = finalPrice * item.quantity;
+        //kết thuc xử lý thanh toán theo checkout
 
         if (typePayment === 'cod') {
             const paymentId = generatePayID();
@@ -86,7 +106,8 @@ class PaymentsController {
                         userId: id,
                         productId: item.productId,
                         quantity: item.quantity,
-                        totalPrice: item.totalPrice,
+                        // totalPrice: item.totalPrice,
+                        totalPrice: totalPrice,
                         fullName: fullName,
                         phoneNumber: phoneNumber,
                         address: address,
@@ -473,8 +494,7 @@ class PaymentsController {
         if (coupon && coupon.discount > 0) {
             for (const group of Object.values(paymentGroups)) {
                 if (group.nameCoupon) {
-                    group.totalPrice =
-                        group.totalPrice - (group.totalPrice * coupon.discount) / 100;
+                    group.totalPrice = group.totalPrice - (group.totalPrice * coupon.discount) / 100;
                 }
             }
         }
@@ -486,7 +506,6 @@ class PaymentsController {
             metadata: groupedPayments,
         }).send(res);
     }
-
 
     async cancelPayment(req, res) {
         const { idPayment } = req.body;

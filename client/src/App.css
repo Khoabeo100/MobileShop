@@ -7,3 +7,12 @@
 * {
     font-family: 'Inter', 'Roboto', sans-serif;
 }
+
+.custom-dropdown {
+    width: 500px;
+}
+
+.custom-dropdown .ant-dropdown-menu {
+    max-height: 400px;
+    overflow-y: auto;
+}

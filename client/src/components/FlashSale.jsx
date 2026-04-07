@@ -38,7 +38,7 @@ function FlashSale() {
             {/* Banner trên */}
             <div className="relative">
                 <img className="w-full h-[70px]" src={img1} alt="" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/1">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <img className="w-[250px] h-[70px]" src={img2} alt="" />
                     <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-bold text-xl">
                         Giảm giá sâu
@@ -58,14 +58,18 @@ function FlashSale() {
                 <div className="absolute top-[70px] left-0 right-0 px-4">
                     <Slider {...settings}>
                         {products.map((p) => {
-                            const mainImage = p.imagesProduct.split(',')[0];
+                            // const mainImage = p.imagesProduct.split(',')[0];
+                            const mainImage = p.imagesProduct?.split(',')[0] || '';
                             const discount = p.discountProduct; // % giảm giá
                             const oldPrice = p.priceProduct; // nếu bạn có giá cũ, có thể dùng
-                            const salePrice = Math.round(p.priceProduct * (1 - discount / 100)); // giá sau giảm
-
+                            // const salePrice = Math.round(p.priceProduct * (1 - discount / 100)); // giá sau giảm
+                            const price = p.priceProduct || 0;
+                            const salePrice = Math.round(price * (1 - discount / 100));
                             return (
-                                <Link to={`/product/${p.id}`}>
-                                    <div key={p.id} className="px-2">
+                                //<Link to={`/product/${p.id}`}>
+                                // <div key={p.id} className="px-2">
+                                <Link key={p.id} to={`/product/${p.id}`}>
+                                    <div className="px-2">
                                         <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 relative group border border-gray-100">
                                             {/* Nhãn giảm giá */}
                                             {discount > 0 && (
@@ -91,7 +95,8 @@ function FlashSale() {
                                                 {/* Thông số kỹ thuật */}
                                                 <div className="min-h-[40px]">
                                                     <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
-                                                        {p.specsProduct?.map((s) => s.value).join(', ')}
+                                                        {/* {p.specsProduct?.map((s) => s.value).join(', ')} */}
+                                                        {p.specsProduct?.map((s) => s.value).join(', ') || ''}
                                                     </p>
                                                 </div>
 
@@ -107,7 +112,8 @@ function FlashSale() {
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex flex-col space-y-1">
                                                             <span className="text-red-600 font-bold text-lg">
-                                                                {salePrice.toLocaleString()}đ
+                                                                {/* {salePrice.toLocaleString()}đ */}
+                                                                {(salePrice || 0).toLocaleString()}đ
                                                             </span>
                                                             {discount > 0 && (
                                                                 <span className="text-gray-400 text-sm line-through">

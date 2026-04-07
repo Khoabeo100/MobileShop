@@ -110,7 +110,7 @@ function ModalAIReview({ isOpen, idProductReview, setIsOpenModalAIReview }) {
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden animate-in slide-in-from-bottom duration-300">
+            <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
                 {showAnalysis ? <AnalysisUI /> : <SelectionUI />}
             </div>
         </div>

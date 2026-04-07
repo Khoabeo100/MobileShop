@@ -261,7 +261,14 @@ function Header() {
                     </Link>
 
                     {/* Notification Bell */}
-                    <Dropdown overlay={notificationMenu} placement="bottomRight" arrow trigger={['click']}>
+                    {/* <Dropdown overlay={notificationMenu} placement="bottomRight" arrow trigger={['click']}> */}
+                    <Dropdown
+                        menu={{ items: notificationMenu.props.items }}
+                        overlayClassName="custom-dropdown"
+                        placement="bottomRight"
+                        arrow
+                        trigger={['click']}
+                    >
                         <button className="relative flex items-center space-x-1 text-white hover:text-gray-200 transition-colors bg-[#00000000] border border-white rounded-full px-3 py-2 hover:bg-white hover:text-red-600 cursor-pointer">
                             <Bell className="w-5 h-5" />
                             {notication.filter((n) => n.isRead === '0').length > 0 && (
@@ -274,7 +281,8 @@ function Header() {
 
                     {/* User Section */}
                     {dataUser.id ? (
-                        <Dropdown overlay={userMenu} placement="bottomRight" arrow>
+                        // <Dropdown overlay={userMenu} placement="bottomRight" arrow>
+                        <Dropdown menu={{ items: userMenu.props.items }} placement="bottomRight" arrow>
                             <div className="flex items-center space-x-2 text-white cursor-pointer hover:text-gray-200">
                                 <Avatar src={dataUser.avatar || undefined} icon={<User />} />
                                 <span className="text-sm font-medium">{dataUser.name}</span>
