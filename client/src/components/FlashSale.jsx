@@ -55,7 +55,7 @@ function FlashSale() {
                 <img src={img4} alt="" className="absolute top-0 right-0 h-[70px] w-auto" />
 
                 {/* Slider sản phẩm */}
-                <div className="absolute top-[70px] left-0 right-0 px-4">
+                <div className="absolute top-[60px] left-0 right-0 px-4">
                     <Slider {...settings}>
                         {products.map((p) => {
                             // const mainImage = p.imagesProduct.split(',')[0];

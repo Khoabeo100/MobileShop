@@ -18,6 +18,7 @@ function DetailProduct() {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [productRelate, setProductRelate] = useState([]);
     const [previewProduct, setPreviewProduct] = useState([]);
+    const { setIsOpenModalAIReview, setIdProductReview } = useStore();
 
     const carouselRef = useRef(null);
 
@@ -38,6 +39,11 @@ function DetailProduct() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleOpenModalAIReview = () => {
+        setIsOpenModalAIReview(true);
+        setIdProductReview(data.id);
     };
 
     useEffect(() => {
@@ -146,9 +152,10 @@ function DetailProduct() {
                             <div className="flex flex-col">
                                 {/* Title & Rating */}
                                 <div>
-                                    <h1 className="text-2xl font-bold text-gray-800 leading-tight">
+                                    <h1 className="text-2xl font-bold text-gray-800 leading-tight flex-1">
                                         {product.nameProduct}
                                     </h1>
+
                                     <div className="flex items-center mt-2">
                                         <Rate
                                             disabled
@@ -170,6 +177,7 @@ function DetailProduct() {
                                         </span>
                                     </div>
                                 </div>
+                                {/* Price & Stock */}
                                 <div className="mt-6 bg-gray-50 pt-4 pb-2 rounded-lg">
                                     <div className="flex items-center gap-2">
                                         <span className="text-2xl font-bold text-red-600">
@@ -223,7 +231,7 @@ function DetailProduct() {
                                     </div>
                                 </div>
                                 {/* Buy Options */}
-                                <div className="mt-6 flex items-center">
+                                {/* <div className="mt-6 flex items-center">
                                     <div className="flex-1">
                                         <Button
                                             type="primary"
@@ -246,6 +254,37 @@ function DetailProduct() {
                                             MUA NGAY
                                         </Button>
                                     </div>
+                                </div> */}
+                                <div className="mt-6 grid grid-cols-1 gap-3">
+                                    <Button
+                                        size="large"
+                                        className="flex items-center justify-center h-[50px] w-full !bg-blue-600 !text-white !border-none !rounded-lg shadow-md hover:!bg-blue-700 hover:shadow-lg transition-all"
+                                        onClick={handleOpenModalAIReview}
+                                    >
+                                        AI REVIEW
+                                    </Button>
+
+                                    <Button
+                                        type="primary"
+                                        danger
+                                        size="large"
+                                        className="flex items-center justify-center h-[50px] bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold w-full shadow-md hover:shadow-lg transition-all"
+                                        icon={<ShoppingCart className="mr-2" />}
+                                        disabled={product.stockProduct === 0}
+                                        onClick={() => handleAddToCart('add')}
+                                    >
+                                        THÊM VÀO GIỎ HÀNG
+                                    </Button>
+
+                                    <Button
+                                        type="default"
+                                        size="large"
+                                        className="flex items-center justify-center h-[50px] border-blue-500 hover:border-blue-700 text-blue-600 hover:text-blue-700 font-bold w-full"
+                                        disabled={product.stockProduct === 0}
+                                        onClick={() => handleAddToCart('buy')}
+                                    >
+                                        MUA NGAY
+                                    </Button>
                                 </div>
                                 {/* Benefits */}
                                 <div className="mt-8 grid grid-cols-2 gap-4">

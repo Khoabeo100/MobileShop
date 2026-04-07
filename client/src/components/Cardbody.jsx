@@ -45,7 +45,7 @@ function ProductCard({ data }) {
     };
 
     return (
-        <div className="w-[250px] rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-300">
+        <div className="h-full w-[240px] rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-300">
             {/* Hình + badge */}
             <Link to={`/product/${data.id}`}>
                 <div className="relative group">
@@ -63,20 +63,29 @@ function ProductCard({ data }) {
             </Link>
 
             {/* Nội dung */}
-            <div className="p-4 flex flex-col gap-2">
+            {/* <div className="p-4 flex flex-col gap-2"> */}
+            <div className="p-4 flex flex-col gap-2 flex-1">
                 {/* Tên sản phẩm */}
-                <h3 className="text-gray-800 font-medium leading-snug line-clamp-2 text-sm hover:text-red-500 transition-colors cursor-pointer">
+                <h3 className="text-gray-800 font-medium leading-snug line-clamp-2 text-sm min-h-[40px] hover:text-red-500 transition-colors cursor-pointer">
                     {data.nameProduct}
                 </h3>
 
                 {/* Giá */}
-                <div className="flex items-center gap-2 mt-1">
+                {/* <div className="flex items-center gap-2 mt-1">
                     <span className="text-red-600 font-bold text-lg">{finalPrice.toLocaleString()}₫</span>
                     {data.discountProduct > 0 && (
                         <span className="text-gray-400 text-sm line-through">
                             {data.priceProduct.toLocaleString()}₫
                         </span>
                     )}
+                </div> */}
+                <div className="flex flex-col mt-1">
+                    {data.discountProduct > 0 && (
+                        <span className="text-gray-400 text-sm line-through">
+                            {data.priceProduct.toLocaleString()}₫
+                        </span>
+                    )}
+                    <span className="text-red-600 font-bold text-lg">{finalPrice.toLocaleString()}₫</span>
                 </div>
 
                 {/* Tồn kho */}
@@ -87,7 +96,8 @@ function ProductCard({ data }) {
                 )}
 
                 {/* Đánh giá + Yêu thích */}
-                <div className="mt-2 flex items-center justify-between text-xs text-gray-600">
+                {/* <div className="mt-2 flex items-center justify-between text-xs text-gray-600"> */}
+                <div className="mt-auto flex items-center justify-between text-xs text-gray-600">
                     <button className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors">
                         {favorites.some((item) => item.productId === data.id) ? (
                             <div
