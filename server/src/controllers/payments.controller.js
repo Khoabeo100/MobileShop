@@ -55,10 +55,10 @@ class PaymentsController {
         await modelCart.update({ fullName, phoneNumber, address, email, note }, { where: { userId: id } });
 
         if (!findCart) {
-            throw new BadRequestError('KhÃ´ng cÃ³ sáº£n pháº©m trong giá» hÃ ng');
+            throw new BadRequestError('Không có sản phẩm trong giỏ hàng');
         }
         if (fullName === '' || phoneNumber === '' || address === '') {
-            throw new BadRequestError('Vui lÃ²ng cáº­p nháº­t thÃ´ng tin Ä‘Æ¡n hÃ ng');
+            throw new BadRequestError('Vui lòng cập nhật thông tin đơn hàng');
         }
 
         let totalPrice = 0;
@@ -78,7 +78,7 @@ class PaymentsController {
             discount = findCounpon.discount;
         }
 
-        //xá»­ lÃ½ thanh toÃ¡n theo checkout
+        // xử lý thanh toán theo checkout
         // const product = await modelProduct.findOne({ where: { id: item.productId } });
 
         // const unitPrice = product.priceProduct;
@@ -86,7 +86,7 @@ class PaymentsController {
         // const finalPrice = product.discountProduct > 0 ? unitPrice * (1 - product.discountProduct / 100) : unitPrice;
 
         // const totalPrice = finalPrice * item.quantity;
-        //káº¿t thuc xá»­ lÃ½ thanh toÃ¡n theo checkout
+        // kết thúc xử lý thanh toán theo checkout
 
         if (typePayment === 'cod') {
             const paymentId = generatePayID();
@@ -95,7 +95,7 @@ class PaymentsController {
                     const findProduct = await modelProduct.findOne({ where: { id: item.productId } });
 
                     await createNotication(
-                        `${fullName} Ä‘Ã£ Ä‘áº·t hÃ ng thÃ nh cÃ´ng ${findProduct.nameProduct}`,
+                        `${fullName} đã đặt hàng thành công ${findProduct.nameProduct}`,
                         id,
                         paymentId,
                     );
@@ -251,24 +251,24 @@ class PaymentsController {
                 tmnCode: 'DH2F13SW',
                 secureSecret: '7VJPG70RGPOWFO47VSBT29WPDYND0EJG',
                 vnpayHost: 'https://sandbox.vnpayment.vn',
-                testMode: true, // tÃ¹y chá»n
-                hashAlgorithm: 'SHA512', // tÃ¹y chá»n
-                loggerFn: ignoreLogger, // tÃ¹y chá»n
+                testMode: true, // tuỳ chọn
+                hashAlgorithm: 'SHA512', // tuỳ chọn
+                loggerFn: ignoreLogger, // tuỳ chọn
             });
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             const vnpayResponse = await vnpay.buildPaymentUrl({
                 vnp_Amount: discount > 0 ? totalPrice - (totalPrice * discount) / 100 : totalPrice, //
                 vnp_IpAddr: '127.0.0.1', //
-                vnp_TxnRef: `${findCart[0]?.userId} + ${generatePayID()}`, // Sá»­ dá»¥ng paymentId thay vÃ¬ singlePaymentId
+                vnp_TxnRef: `${findCart[0]?.userId} + ${generatePayID()}`, // Sử dụng paymentId thay vì singlePaymentId
                 vnp_OrderInfo: `Thanh toan don hang ${findCart[0]?.userId}`,
                 vnp_OrderType: ProductCode.Other,
                 vnp_ReturnUrl: `http://localhost:3001/api/payments/vnpay`, //
-                vnp_Locale: VnpLocale.VN, // 'vn' hoáº·c 'en'
-                vnp_CreateDate: dateFormat(new Date()), // tÃ¹y chá»n, máº·c Ä‘á»‹nh lÃ  hiá»‡n táº¡i
-                vnp_ExpireDate: dateFormat(tomorrow), // tÃ¹y chá»n
+                vnp_Locale: VnpLocale.VN, // 'vn' hoặc 'en'
+                vnp_CreateDate: dateFormat(new Date()), // tuỳ chọn, mặc định là hiện tại
+                vnp_ExpireDate: dateFormat(tomorrow), // tuỳ chọn
             });
-            new OK({ message: 'Thanh toÃ¡n thÃ´ng bÃ¡o', metadata: vnpayResponse }).send(res);
+            new OK({ message: 'Thanh toán thông báo', metadata: vnpayResponse }).send(res);
         } else if (typePayment === 'qr') {
         }
     }
@@ -450,7 +450,7 @@ class PaymentsController {
         const { id } = req.user;
         const payments = await modelPayments.findAll({ where: { userId: id } });
 
-        // Náº¿u user chÆ°a cÃ³ Ä‘Æ¡n nÃ o thÃ¬ tráº£ luÃ´n máº£ng rá»—ng, trÃ¡nh payments[0] = undefined
+        // Nếu user chưa có đơn nào thì trả luôn mảng rỗng, tránh payments[0] = undefined
         if (!payments || payments.length === 0) {
             return new OK({
                 message: 'Get payments by user id success',
@@ -458,7 +458,7 @@ class PaymentsController {
             }).send(res);
         }
 
-        // Chá»‰ tÃ¬m coupon náº¿u cÃ³ nameCoupon
+        // Chỉ tìm coupon nếu có nameCoupon
         let coupon = null;
         const couponName = payments[0]?.nameCoupon;
         if (couponName) {
@@ -505,11 +505,11 @@ class PaymentsController {
                 previewProduct: previewProduct,
             });
 
-            // Cá»™ng tá»•ng trÆ°á»›c
+            // Cộng tổng trước
             paymentGroups[payment.idPayment].totalPrice += payment.totalPrice;
         }
 
-        // Ãp dá»¥ng giáº£m giÃ¡ sau khi Ä‘Ã£ cá»™ng xong (náº¿u cÃ³ coupon)
+        //áp dụng giảm giá sau khi đã cộng xong (nếu có coupon)
         if (coupon && coupon.discount > 0) {
             for (const group of Object.values(paymentGroups)) {
                 if (group.nameCoupon) {
@@ -593,39 +593,39 @@ class PaymentsController {
             throw new NotFoundError('Payment not found');
         }
 
-        // Update tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng
+        // Update trạng thái đơn hàng
         await modelPayments.update({ status }, { where: { idPayment } });
 
-        // Ná»™i dung thÃ´ng bÃ¡o theo status
+        // Nội dung thông báo theo status
         let content = '';
         switch (status) {
             case 'confirm':
-                content = `${payment.fullName} Ä‘Ã£ xÃ¡c nháº­n Ä‘Æ¡n hÃ ng ${payment.idPayment}`;
+                content = `${payment.fullName} đã xác nhận đơn hàng ${payment.idPayment}`;
                 break;
             case 'shipping':
-                content = `${payment.fullName} Ä‘Ã£ báº¯t Ä‘áº§u váº­n chuyá»ƒn ${payment.idPayment}`;
+                content = `${payment.fullName} đã bắt đầu vận chuyển ${payment.idPayment}`;
                 break;
             case 'success':
-                content = `${payment.fullName} Ä‘Ã£ giao hÃ ng thÃ nh cÃ´ng ${payment.idPayment}`;
+                content = `${payment.fullName} đã giao hàng thành công ${payment.idPayment}`;
                 break;
             case 'failed':
-                content = `${payment.fullName} Ä‘Ã£ bá»‹ huá»· ${payment.idPayment}`;
+                content = `${payment.fullName} đã bị huỷ ${payment.idPayment}`;
                 break;
             case 'pending':
-                content = `${payment.fullName} Ä‘Ã£ Ä‘áº·t hÃ ng thÃ nh cÃ´ng ${payment.idPayment}`;
+                content = `${payment.fullName} đã đặt hàng thành công ${payment.idPayment}`;
                 break;
         }
 
-        // Kiá»ƒm tra xem Ä‘Ã£ cÃ³ thÃ´ng bÃ¡o cho Ä‘Æ¡n hÃ ng nÃ y chÆ°a
+        //kiểm tra xem đã có thông báo cho đơn hàng này chưa, nếu có rồi thì cập nhật lại nội dung và thời gian, nếu chưa thì tạo mới
         const oldNoti = await modelNotication.findOne({
             where: { userId: payment.userId, idPayment: payment.idPayment },
         });
 
         if (oldNoti) {
-            // Cáº­p nháº­t ná»™i dung + thá»i gian
+            // Cập nhật nội dung + thời gian
             await modelNotication.update({ content, updatedAt: new Date() }, { where: { id: oldNoti.id } });
         } else {
-            // Táº¡o má»›i náº¿u chÆ°a cÃ³
+            // Tạo mới nếu chưa có
             await createNotication(content, payment.userId, payment.idPayment);
         }
 
@@ -634,5 +634,3 @@ class PaymentsController {
 }
 
 module.exports = new PaymentsController();
-
-

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap&subset=vietnamese');
 
 @import 'tailwindcss';
 
@@ -6,6 +6,19 @@
 
 * {
     font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+.custom-dropdown,
+.custom-dropdown .ant-dropdown-menu,
+.custom-dropdown .ant-dropdown-menu-item,
+.custom-dropdown .ant-menu-item,
+.custom-dropdown .ant-dropdown-menu-item span,
+.custom-dropdown .ant-dropdown-menu-item a,
+.custom-dropdown .ant-dropdown-menu-item div,
+.custom-dropdown .ant-menu-item span,
+.custom-dropdown .ant-menu-item a,
+.custom-dropdown .ant-menu-item div {
+    font-family: 'Inter', 'Roboto', sans-serif !important;
 }
 
 .custom-dropdown {

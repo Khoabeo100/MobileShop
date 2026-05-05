@@ -176,12 +176,12 @@ function ModernChatMessage() {
     const TypingIndicator = React.memo(() => (
         <div className="flex items-end gap-3 mb-6">
             <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 shadow-md">
-                {/* <img src="/admin.png" alt="Support" className="w-full h-full object-cover" /> */}
-                <img
+                <img src="/admin.png" alt="Support" className="w-full h-full object-cover" />
+                {/* <img
                     src="https://cdn2.cellphones.com.vn/x/media/favicon/default/logo-cps.png"
                     alt="Support"
                     className="w-full h-full object-cover"
-                />
+                /> */}
             </div>
             <div className="bg-white px-4 py-3 rounded-2xl shadow-sm border border-gray-100">
                 <div className="flex gap-1">
@@ -224,12 +224,12 @@ function ModernChatMessage() {
                             <div className="flex items-center gap-3">
                                 <div className="relative">
                                     <div className="w-10 h-10 rounded-full overflow-hidden shadow-md">
-                                        {/* <img src="/admin.png" alt="Support" className="w-full h-full object-cover" /> */}
-                                        <img
+                                        <img src="/admin.png" alt="Support" className="w-full h-full object-cover" />
+                                        {/* <img
                                             src="https://cdn2.cellphones.com.vn/x/media/favicon/default/logo-cps.png"
                                             alt="Support"
                                             className="w-full h-full object-cover"
-                                        />
+                                        /> */}
                                     </div>
                                     <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                                 </div>
