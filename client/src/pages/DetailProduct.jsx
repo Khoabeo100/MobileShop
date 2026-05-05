@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Image, Tabs, Rate, Button, InputNumber, Tag, Divider, Skeleton, Carousel, Badge, message } from 'antd';
 import { ShoppingCart, Heart, Check, Shield, RotateCcw, Truck, ArrowLeft, ArrowRight, Share2 } from 'lucide-react';
-import CardBody from '../components/CardBody';
+import CardBody from '../components/Cardbody';
 import { useStore } from '../hooks/useStore';
 import moment from 'moment';
 
@@ -43,7 +43,8 @@ function DetailProduct() {
 
     const handleOpenModalAIReview = () => {
         setIsOpenModalAIReview(true);
-        setIdProductReview(data.id);
+        // setIdProductReview(data.id);
+        setIdProductReview(product.id);
     };
 
     useEffect(() => {

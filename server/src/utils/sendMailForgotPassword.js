@@ -37,7 +37,7 @@ const SendMailForgotPassword = async (email, otp) => {
 
         // Cấu hình email
         const mailOptions = {
-            from: `"Cellphones" <${EMAIL_USER}>`,
+            from: `"KB Mobile Shop" <${EMAIL_USER}>`,
             to: email,
             subject: 'Yêu cầu đặt lại mật khẩu',
             text: `Mã OTP để đặt lại mật khẩu của bạn là: ${otp}`,
@@ -119,7 +119,7 @@ const SendMailForgotPassword = async (email, otp) => {
                     </div>
                     <div class="footer">
                         Trân trọng,<br/>
-                        <strong>Cellphones</strong>
+                        <strong>KB Mobile Shop</strong>
                     </div>
                 </div>
             </body>

@@ -12,6 +12,7 @@ import { useStore } from './hooks/useStore';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import ModalAIReview from './components/ModalAIReview';
+import Chatbot from './utils/Chatbot';
 
 function App() {
     useEffect(() => {

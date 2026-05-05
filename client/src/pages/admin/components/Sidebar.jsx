@@ -15,6 +15,7 @@ import {
 } from '@ant-design/icons';
 import { requestLogout } from '../../../config/request';
 import { useNavigate } from 'react-router-dom';
+import { MobileOutlined } from '@ant-design/icons';
 
 const { Sider } = Layout;
 const { Title } = Typography;
@@ -59,13 +60,13 @@ function Sidebar({ collapsed, token, activeTab, setActiveTab }) {
                 <div className="font-bold flex items-center text-white">
                     {!collapsed && (
                         <span className="flex items-center gap-3">
-                            <LaptopOutlined className="text-2xl" />
+                            <MobileOutlined className="text-2xl" />
                             <span className="text-xl tracking-wide">KB Mobile</span>
                         </span>
                     )}
                     {collapsed && (
                         <span className="text-2xl">
-                            <LaptopOutlined />
+                            <MobileOutlined />
                         </span>
                     )}
                 </div>

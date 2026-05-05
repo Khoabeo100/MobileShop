@@ -1,4 +1,4 @@
-const modelCart = require('../models/cart.model');
+﻿const modelCart = require('../models/cart.model');
 const modelPayments = require('../models/payments.model');
 const modelProduct = require('../models/products.model');
 const modelCoupon = require('../models/counpon.model');
@@ -24,7 +24,6 @@ async function createNotication(content, userId, idPayment) {
 }
 
 function generatePayID() {
-    // Tạo ID thanh toán bao gồm cả giây để tránh trùng lặp
     const now = new Date();
     const timestamp = now.getTime();
     const seconds = now.getSeconds().toString().padStart(2, '0');
@@ -56,10 +55,10 @@ class PaymentsController {
         await modelCart.update({ fullName, phoneNumber, address, email, note }, { where: { userId: id } });
 
         if (!findCart) {
-            throw new BadRequestError('Không có sản phẩm trong giỏ hàng');
+            throw new BadRequestError('KhÃ´ng cÃ³ sáº£n pháº©m trong giá» hÃ ng');
         }
         if (fullName === '' || phoneNumber === '' || address === '') {
-            throw new BadRequestError('Vui lòng cập nhật thông tin đơn hàng');
+            throw new BadRequestError('Vui lÃ²ng cáº­p nháº­t thÃ´ng tin Ä‘Æ¡n hÃ ng');
         }
 
         let totalPrice = 0;
@@ -79,7 +78,7 @@ class PaymentsController {
             discount = findCounpon.discount;
         }
 
-        //xử lý thanh toán theo checkout
+        //xá»­ lÃ½ thanh toÃ¡n theo checkout
         // const product = await modelProduct.findOne({ where: { id: item.productId } });
 
         // const unitPrice = product.priceProduct;
@@ -87,7 +86,7 @@ class PaymentsController {
         // const finalPrice = product.discountProduct > 0 ? unitPrice * (1 - product.discountProduct / 100) : unitPrice;
 
         // const totalPrice = finalPrice * item.quantity;
-        //kết thuc xử lý thanh toán theo checkout
+        //káº¿t thuc xá»­ lÃ½ thanh toÃ¡n theo checkout
 
         if (typePayment === 'cod') {
             const paymentId = generatePayID();
@@ -96,7 +95,7 @@ class PaymentsController {
                     const findProduct = await modelProduct.findOne({ where: { id: item.productId } });
 
                     await createNotication(
-                        `${fullName} đã đặt hàng thành công ${findProduct.nameProduct}`,
+                        `${fullName} Ä‘Ã£ Ä‘áº·t hÃ ng thÃ nh cÃ´ng ${findProduct.nameProduct}`,
                         id,
                         paymentId,
                     );
@@ -134,26 +133,24 @@ class PaymentsController {
                 metadata: payment,
             }).send(res);
         } else if (typePayment === 'momo') {
-            var accessKey = 'F8BBA842ECF85';
-            var secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
-            var orderInfo = `Thanh toan don hang ${findCart[0]?.userId}`;
-            var partnerCode = 'MOMO';
-            var redirectUrl = 'http://localhost:3001/api/payments/momo';
-            var ipnUrl = 'http://localhost:3001/api/payments/momo';
-            var requestType = 'payWithMethod';
-            var amount = discount > 0 ? totalPrice - (totalPrice * discount) / 100 : totalPrice;
-            var orderId = partnerCode + new Date().getTime();
-            var requestId = orderId;
-            var extraData = '';
-            var paymentCode =
-                'T8Qii53fAXyUftPV3m9ysyRhEanUs9KlOPfHgpMR0ON50U10Bh+vZdpJU7VY4z+Z2y77fJHkoDc69scwwzLuW5MzeUKTwPo3ZMaB29imm6YulqnWfTkgzqRaion+EuD7FN9wZ4aXE1+mRt0gHsU193y+yxtRgpmY7SDMU9hCKoQtYyHsfFR5FUAOAKMdw2fzQqpToei3rnaYvZuYaxolprm9+/+WIETnPUDlxCYOiw7vPeaaYQQH0BF0TxyU3zu36ODx980rJvPAgtJzH1gUrlxcSS1HQeQ9ZaVM1eOK/jl8KJm6ijOwErHGbgf/hVymUQG65rHU2MWz9U8QUjvDWA==';
-            var orderGroupId = '';
-            var autoCapture = true;
-            var lang = 'vi';
+            const accessKey = 'F8BBA842ECF85';
+            const secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
+            const orderInfo = `Thanh toan don hang ${id}`;
+            const partnerCode = 'MOMO';
+            const redirectUrl = 'http://localhost:3001/api/payments/momo';
+            const ipnUrl = 'http://localhost:3001/api/payments/momo';
+            const requestType = 'payWithMethod';
+            const amount = discount > 0 ? totalPrice - (totalPrice * discount) / 100 : totalPrice;
+            const orderId = partnerCode + new Date().getTime();
+            const requestId = orderId;
+            const extraData = `${id}`;
+            const orderGroupId = '';
+            const autoCapture = true;
+            const lang = 'vi';
 
             //before sign HMAC SHA256 with format
             //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
-            var rawSignature =
+            const rawSignature =
                 'accessKey=' +
                 accessKey +
                 '&amount=' +
@@ -179,7 +176,7 @@ class PaymentsController {
             console.log(rawSignature);
             //signature
             const crypto = require('crypto');
-            var signature = crypto.createHmac('sha256', secretKey).update(rawSignature).digest('hex');
+            const signature = crypto.createHmac('sha256', secretKey).update(rawSignature).digest('hex');
             console.log('--------------------SIGNATURE----------------');
             console.log(signature);
 
@@ -217,24 +214,33 @@ class PaymentsController {
             const req2 = https.request(options, (res2) => {
                 console.log(`Status: ${res2.statusCode}`);
                 console.log(`Headers: ${JSON.stringify(res2.headers)}`);
+                let responseBody = '';
                 res2.setEncoding('utf8');
-                res2.on('data', (body) => {
-                    console.log('Body: ');
-                    console.log(body);
-                    console.log('resultCode: ');
-                    console.log(JSON.parse(body).resultCode);
-                    new OK({
-                        message: 'Create payment success',
-                        metadata: JSON.parse(body),
-                    }).send(res);
+                res2.on('data', (chunk) => {
+                    responseBody += chunk;
                 });
                 res2.on('end', () => {
-                    console.log('No more data in response.');
+                    try {
+                        const result = JSON.parse(responseBody);
+                        if (result.payUrl) {
+                            new OK({
+                                message: 'Create payment success',
+                                metadata: { payUrl: result.payUrl },
+                            }).send(res);
+                        } else {
+                            console.error('MoMo response error', result);
+                            return res.status(500).json({ message: 'MoMo payment creation failed', error: result });
+                        }
+                    } catch (error) {
+                        console.error('MoMo parse error', error);
+                        return res.status(500).json({ message: 'MoMo response parse failed' });
+                    }
                 });
             });
 
             req2.on('error', (e) => {
-                console.log(`problem with request: ${e.message}`);
+                console.error(`problem with request: ${e.message}`);
+                return res.status(500).json({ message: 'MoMo request error', error: e.message });
             });
             // write data to request body
             console.log('Sending....');
@@ -245,34 +251,38 @@ class PaymentsController {
                 tmnCode: 'DH2F13SW',
                 secureSecret: '7VJPG70RGPOWFO47VSBT29WPDYND0EJG',
                 vnpayHost: 'https://sandbox.vnpayment.vn',
-                testMode: true, // tùy chọn
-                hashAlgorithm: 'SHA512', // tùy chọn
-                loggerFn: ignoreLogger, // tùy chọn
+                testMode: true, // tÃ¹y chá»n
+                hashAlgorithm: 'SHA512', // tÃ¹y chá»n
+                loggerFn: ignoreLogger, // tÃ¹y chá»n
             });
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             const vnpayResponse = await vnpay.buildPaymentUrl({
                 vnp_Amount: discount > 0 ? totalPrice - (totalPrice * discount) / 100 : totalPrice, //
                 vnp_IpAddr: '127.0.0.1', //
-                vnp_TxnRef: `${findCart[0]?.userId} + ${generatePayID()}`, // Sử dụng paymentId thay vì singlePaymentId
+                vnp_TxnRef: `${findCart[0]?.userId} + ${generatePayID()}`, // Sá»­ dá»¥ng paymentId thay vÃ¬ singlePaymentId
                 vnp_OrderInfo: `Thanh toan don hang ${findCart[0]?.userId}`,
                 vnp_OrderType: ProductCode.Other,
                 vnp_ReturnUrl: `http://localhost:3001/api/payments/vnpay`, //
-                vnp_Locale: VnpLocale.VN, // 'vn' hoặc 'en'
-                vnp_CreateDate: dateFormat(new Date()), // tùy chọn, mặc định là hiện tại
-                vnp_ExpireDate: dateFormat(tomorrow), // tùy chọn
+                vnp_Locale: VnpLocale.VN, // 'vn' hoáº·c 'en'
+                vnp_CreateDate: dateFormat(new Date()), // tÃ¹y chá»n, máº·c Ä‘á»‹nh lÃ  hiá»‡n táº¡i
+                vnp_ExpireDate: dateFormat(tomorrow), // tÃ¹y chá»n
             });
-            new OK({ message: 'Thanh toán thông báo', metadata: vnpayResponse }).send(res);
+            new OK({ message: 'Thanh toÃ¡n thÃ´ng bÃ¡o', metadata: vnpayResponse }).send(res);
         } else if (typePayment === 'qr') {
         }
     }
 
     async momoCallback(req, res) {
-        const { orderInfo, resultCode } = req.query;
-        const id = orderInfo.split(' ')[4];
+        const { orderInfo, resultCode, extraData } = req.method === 'POST' ? req.body : req.query;
+        const id = extraData || orderInfo?.split(' ').pop();
 
-        if (resultCode === '0') {
+        if (resultCode === '0' && id) {
             const findCart = await modelCart.findAll({ where: { userId: id } });
+            if (!findCart?.length) {
+                return res.redirect('http://localhost:5175/payment-failed');
+            }
+
             const paymentId = generatePayID();
             const data = await Promise.all(
                 findCart.map(async (item) => {
@@ -293,16 +303,22 @@ class PaymentsController {
                     });
                 }),
             );
+
             if (findCart[0].nameCoupon) {
-                await modelCoupon.update(
-                    { quantity: findCounpon.quantity - 1 },
-                    { where: { nameCoupon: findCart[0].nameCoupon } },
-                );
+                const findCounpon = await modelCoupon.findOne({ where: { nameCoupon: findCart[0].nameCoupon } });
+                if (findCounpon) {
+                    await modelCoupon.update(
+                        { quantity: findCounpon.quantity - 1 },
+                        { where: { nameCoupon: findCart[0].nameCoupon } },
+                    );
+                }
             }
             await detailOrder(data);
             await modelCart.destroy({ where: { userId: id } });
-            res.redirect(`http://localhost:5175/payment-success/${paymentId}`);
+            return res.redirect(`http://localhost:5175/payment-success/${paymentId}`);
         }
+
+        return res.redirect('http://localhost:5175/payment-failed');
     }
 
     async vnpayCallback(req, res) {
@@ -331,10 +347,13 @@ class PaymentsController {
                 }),
             );
             if (findCart[0].nameCoupon) {
-                await modelCoupon.update(
-                    { quantity: findCounpon.quantity - 1 },
-                    { where: { nameCoupon: findCart[0].nameCoupon } },
-                );
+                const findCounpon = await modelCoupon.findOne({ where: { nameCoupon: findCart[0].nameCoupon } });
+                if (findCounpon) {
+                    await modelCoupon.update(
+                        { quantity: findCounpon.quantity - 1 },
+                        { where: { nameCoupon: findCart[0].nameCoupon } },
+                    );
+                }
             }
             await detailOrder(data);
             await modelCart.destroy({ where: { userId: id } });
@@ -431,7 +450,7 @@ class PaymentsController {
         const { id } = req.user;
         const payments = await modelPayments.findAll({ where: { userId: id } });
 
-        // Nếu user chưa có đơn nào thì trả luôn mảng rỗng, tránh payments[0] = undefined
+        // Náº¿u user chÆ°a cÃ³ Ä‘Æ¡n nÃ o thÃ¬ tráº£ luÃ´n máº£ng rá»—ng, trÃ¡nh payments[0] = undefined
         if (!payments || payments.length === 0) {
             return new OK({
                 message: 'Get payments by user id success',
@@ -439,7 +458,7 @@ class PaymentsController {
             }).send(res);
         }
 
-        // Chỉ tìm coupon nếu có nameCoupon
+        // Chá»‰ tÃ¬m coupon náº¿u cÃ³ nameCoupon
         let coupon = null;
         const couponName = payments[0]?.nameCoupon;
         if (couponName) {
@@ -486,11 +505,11 @@ class PaymentsController {
                 previewProduct: previewProduct,
             });
 
-            // Cộng tổng trước
+            // Cá»™ng tá»•ng trÆ°á»›c
             paymentGroups[payment.idPayment].totalPrice += payment.totalPrice;
         }
 
-        // Áp dụng giảm giá sau khi đã cộng xong (nếu có coupon)
+        // Ãp dá»¥ng giáº£m giÃ¡ sau khi Ä‘Ã£ cá»™ng xong (náº¿u cÃ³ coupon)
         if (coupon && coupon.discount > 0) {
             for (const group of Object.values(paymentGroups)) {
                 if (group.nameCoupon) {
@@ -574,39 +593,39 @@ class PaymentsController {
             throw new NotFoundError('Payment not found');
         }
 
-        // Update trạng thái đơn hàng
+        // Update tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng
         await modelPayments.update({ status }, { where: { idPayment } });
 
-        // Nội dung thông báo theo status
+        // Ná»™i dung thÃ´ng bÃ¡o theo status
         let content = '';
         switch (status) {
             case 'confirm':
-                content = `${payment.fullName} đã xác nhận đơn hàng ${payment.idPayment}`;
+                content = `${payment.fullName} Ä‘Ã£ xÃ¡c nháº­n Ä‘Æ¡n hÃ ng ${payment.idPayment}`;
                 break;
             case 'shipping':
-                content = `${payment.fullName} đã bắt đầu vận chuyển ${payment.idPayment}`;
+                content = `${payment.fullName} Ä‘Ã£ báº¯t Ä‘áº§u váº­n chuyá»ƒn ${payment.idPayment}`;
                 break;
             case 'success':
-                content = `${payment.fullName} đã giao hàng thành công ${payment.idPayment}`;
+                content = `${payment.fullName} Ä‘Ã£ giao hÃ ng thÃ nh cÃ´ng ${payment.idPayment}`;
                 break;
             case 'failed':
-                content = `${payment.fullName} đã bị huỷ ${payment.idPayment}`;
+                content = `${payment.fullName} Ä‘Ã£ bá»‹ huá»· ${payment.idPayment}`;
                 break;
             case 'pending':
-                content = `${payment.fullName} đã đặt hàng thành công ${payment.idPayment}`;
+                content = `${payment.fullName} Ä‘Ã£ Ä‘áº·t hÃ ng thÃ nh cÃ´ng ${payment.idPayment}`;
                 break;
         }
 
-        // Kiểm tra xem đã có thông báo cho đơn hàng này chưa
+        // Kiá»ƒm tra xem Ä‘Ã£ cÃ³ thÃ´ng bÃ¡o cho Ä‘Æ¡n hÃ ng nÃ y chÆ°a
         const oldNoti = await modelNotication.findOne({
             where: { userId: payment.userId, idPayment: payment.idPayment },
         });
 
         if (oldNoti) {
-            // Cập nhật nội dung + thời gian
+            // Cáº­p nháº­t ná»™i dung + thá»i gian
             await modelNotication.update({ content, updatedAt: new Date() }, { where: { id: oldNoti.id } });
         } else {
-            // Tạo mới nếu chưa có
+            // Táº¡o má»›i náº¿u chÆ°a cÃ³
             await createNotication(content, payment.userId, payment.idPayment);
         }
 
@@ -615,3 +634,5 @@ class PaymentsController {
 }
 
 module.exports = new PaymentsController();
+
+

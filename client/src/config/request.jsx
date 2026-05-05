@@ -14,6 +14,11 @@ export const requestReview = async (data) => {
     return res.data;
 };
 
+export const requestChatbot = async (data) => {
+    const res = await request.post('/api/chatbot', data);
+    return res.data;
+};
+
 const apiUser = '/api/user';
 // export const requestGetUserInfo = async () => {
 //     const res = await apiClient.get(`${apiUser}/info`);

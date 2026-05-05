@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Send, MessageCircle, X } from 'lucide-react';
 import { requestCreateMessage, requestGetMessages } from '../config/request';
 import { useStore } from '../hooks/useStore';
+import { requestChatbot } from '../config/request';
 
 function ModernChatMessage() {
     const [messages, setMessages] = useState([]);
@@ -23,7 +24,7 @@ function ModernChatMessage() {
             const mappedMessages = res.metadata.map((msg) => ({
                 id: msg.id,
                 text: msg.text,
-                senderId: msg.senderId === dataUser.id ? 'user' : 'admin',
+                senderId: msg.senderId,
                 createdAt: msg.createdAt,
             }));
 
@@ -73,6 +74,36 @@ function ModernChatMessage() {
             text: inputValue,
         };
         await requestCreateMessage(data);
+
+        setIsTyping(true);
+
+        try {
+            const res = await requestChatbot({
+                question: inputValue,
+                userId: dataUser.id,
+            });
+
+            const botMessage = {
+                id: Date.now() + 999,
+                text: res?.answer || 'Chatbot không trả lời được.',
+                senderId: 'bot', // 👈 phân biệt bot
+                createdAt: new Date().toISOString(),
+            };
+
+            setMessages((prev) => [...prev, botMessage]);
+        } catch (err) {
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: Date.now() + 1000,
+                    text: 'Lỗi chatbot.',
+                    senderId: 'bot',
+                    createdAt: new Date().toISOString(),
+                },
+            ]);
+        } finally {
+            setIsTyping(false);
+        }
     };
 
     const handleKeyPress = (e) => {
@@ -107,6 +138,13 @@ function ModernChatMessage() {
 
     const ChatBubble = React.memo(({ message }) => {
         const isUser = message.senderId === dataUser.id;
+        const isBot = message.senderId === 'bot';
+
+        const bubbleClass = isUser
+            ? 'bg-blue-600 text-white shadow-md'
+            : isBot
+              ? 'bg-green-100 text-gray-800 shadow-sm border border-green-200'
+              : 'bg-white text-gray-800 shadow-sm border border-gray-100';
 
         return (
             <div className={`flex items-end gap-3 mb-6 ${isUser ? 'flex-row-reverse' : ''}`}>
@@ -117,13 +155,7 @@ function ModernChatMessage() {
                 )}
 
                 <div className={`max-w-[80%] ${isUser ? 'text-right' : ''}`}>
-                    <div
-                        className={`relative px-4 py-3 rounded-2xl ${
-                            isUser
-                                ? 'bg-blue-600 text-white shadow-md'
-                                : 'bg-white text-gray-800 shadow-sm border border-gray-100'
-                        }`}
-                    >
+                    <div className={`relative px-4 py-3 rounded-2xl ${bubbleClass}`}>
                         <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
                     </div>
 
@@ -144,6 +176,7 @@ function ModernChatMessage() {
     const TypingIndicator = React.memo(() => (
         <div className="flex items-end gap-3 mb-6">
             <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 shadow-md">
+                {/* <img src="/admin.png" alt="Support" className="w-full h-full object-cover" /> */}
                 <img
                     src="https://cdn2.cellphones.com.vn/x/media/favicon/default/logo-cps.png"
                     alt="Support"
@@ -191,6 +224,7 @@ function ModernChatMessage() {
                             <div className="flex items-center gap-3">
                                 <div className="relative">
                                     <div className="w-10 h-10 rounded-full overflow-hidden shadow-md">
+                                        {/* <img src="/admin.png" alt="Support" className="w-full h-full object-cover" /> */}
                                         <img
                                             src="https://cdn2.cellphones.com.vn/x/media/favicon/default/logo-cps.png"
                                             alt="Support"

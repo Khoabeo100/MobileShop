@@ -101,6 +101,24 @@ async function analyzeProductForPurpose(reviewData) {
         const purposeInfo = purposeMapping[purpose];
         if (!purposeInfo) throw new Error('Mục đích sử dụng không hợp lệ');
 
+        //XỬ LÝ SPECS
+        let specsHTML = '<p>Không có dữ liệu cấu hình</p>';
+
+        if (productData.specs) {
+            try {
+                // Nếu specs là JSON string
+                const parsedSpecs =
+                    typeof productData.specs === 'string' ? JSON.parse(productData.specs) : productData.specs;
+
+                specsHTML = Object.entries(parsedSpecs)
+                    .map(([key, value]) => `<p style="margin:2px 0;">• ${key}: ${value}</p>`)
+                    .join('');
+            } catch (err) {
+                // Nếu specs chỉ là text thường
+                specsHTML = `<p style="margin:2px 0;">${productData.specs}</p>`;
+            }
+        }
+
         // HTML hiển thị sản phẩm
         const productHTML = `
             <div style="border:2px solid #007bff;padding:16px;margin:12px 0;border-radius:12px;background:linear-gradient(135deg,#f8f9ff,#e8f0ff);">
@@ -112,41 +130,100 @@ async function analyzeProductForPurpose(reviewData) {
                         : ''
                 }
                 <h2 style="color:#007bff;font-size:18px;">${productData.nameProduct}</h2>
+
                 <p style="color:#28a745;font-weight:bold;">💰 Giá: ${Number(productData.priceProduct).toLocaleString(
                     'vi-VN',
                 )} VND</p>
+
                 <p style="color:#6c757d;"><strong>Mô tả:</strong> ${productData.descriptionProduct}</p>
+
+                //new
+                <div style="margin-top:8px;padding:8px;background:#ffffff;border-radius:8px;">
+                    <strong>⚙️ Cấu hình:</strong>
+                    ${specsHTML}
+                </div>
+
             </div>
         `;
 
         // Prompt
+        // const prompt = `
+        // 🤖 Bạn là CHUYÊN GIA ĐIỆN THOẠI!
+        // 📋 THÔNG TIN PHÂN TÍCH:
+        // • Mục đích sử dụng: ${purposeInfo.name} (${purposeInfo.description})
+        // • Yêu cầu kỹ thuật:
+        //   ${Object.entries(purposeInfo.requirements)
+        //       .map(([k, v]) => `- ${k}: ${v}`)
+        //       .join('\n  ')}
+        // • Ưu tiên đánh giá: ${purposeInfo.priorities.join(', ')}
+
+        // 🔍 SẢN PHẨM:
+        // ${productHTML}
+
+        // 📊 Hãy trả về HTML đẹp với các mục:
+        // 1. 🎯 Tổng quan & Điểm số (1-10)
+        // 2. ✅ Điểm mạnh
+        // 3. ❌ Điểm yếu
+        // 4. 💡 Đánh giá chi tiết (chipset, RAM, camera, màn hình, pin, sạc nhanh…)
+        // 5. 📱 Hiệu năng dự đoán (game/app, quay video…)
+        // 6. 💰 Giá trị & so sánh
+        // 7. 🔮 Kết luận & khuyến nghị
+
+        // ⚠️ Lưu ý:
+        // - Phân tích khách quan, dựa trên specs
+        // - Không bịa thông tin
+        // - Trả về HTML với icon và màu sắc
+
+        // ⚖️ NGUYÊN TẮC ĐÁNH GIÁ:
+
+        // - Không yêu cầu khớp tuyệt đối với cấu hình
+        // - Nếu thấp hơn yêu cầu → giảm điểm nhưng không loại bỏ
+        // - Nếu vượt yêu cầu → cộng điểm
+        // - Đánh giá theo mức độ phù hợp (0-10), không phải đạt/không đạt
+        // `;
+
+        //new prompt
         const prompt = `
-        🤖 Bạn là CHUYÊN GIA ĐIỆN THOẠI!
-        📋 THÔNG TIN PHÂN TÍCH:
-        • Mục đích sử dụng: ${purposeInfo.name} (${purposeInfo.description})
-        • Yêu cầu kỹ thuật: 
-          ${Object.entries(purposeInfo.requirements)
-              .map(([k, v]) => `- ${k}: ${v}`)
-              .join('\n  ')}
-        • Ưu tiên đánh giá: ${purposeInfo.priorities.join(', ')}
+🤖 Bạn là CHUYÊN GIA ĐÁNH GIÁ ĐIỆN THOẠI!
 
-        🔍 SẢN PHẨM:
-        ${productHTML}
+📋 THÔNG TIN PHÂN TÍCH:
+• Mục đích sử dụng: ${purposeInfo.name} (${purposeInfo.description})
 
-        📊 Hãy trả về HTML đẹp với các mục:
-        1. 🎯 Tổng quan & Điểm số (1-10)
-        2. ✅ Điểm mạnh
-        3. ❌ Điểm yếu
-        4. 💡 Đánh giá chi tiết (chipset, RAM, camera, màn hình, pin, sạc nhanh…)
-        5. 📱 Hiệu năng dự đoán (game/app, quay video…)
-        6. 💰 Giá trị & so sánh
-        7. 🔮 Kết luận & khuyến nghị
+• Yêu cầu kỹ thuật:
+${Object.entries(purposeInfo.requirements)
+    .map(([k, v]) => `- ${k}: ${v}`)
+    .join('\n')}
 
-        ⚠️ Lưu ý:
-        - Phân tích khách quan, dựa trên specs
-        - Không bịa thông tin
-        - Trả về HTML với icon và màu sắc
-        `;
+• Ưu tiên:
+${purposeInfo.priorities.join(', ')}
+
+🔍 THÔNG TIN SẢN PHẨM (QUAN TRỌNG - DỰA VÀO SPECS):
+${productHTML}
+
+📊 YÊU CẦU PHÂN TÍCH:
+1. 🎯 Tổng quan & Điểm số (0-10)
+2. ✅ Điểm mạnh
+3. ❌ Điểm yếu
+4. 💡 Đánh giá chi tiết (chipset, RAM, camera, màn hình, pin…)
+5. 📱 Hiệu năng thực tế (game/app/video)
+6. 💰 Giá trị so với cấu hình
+7. 🔮 Kết luận & khuyến nghị
+
+⚖️ NGUYÊN TẮC:
+- Ưu tiên phân tích dựa trên "Cấu hình (specs)"
+- Nếu thiếu specs → mới dùng mô tả
+- Không yêu cầu khớp 100%
+- Nếu thấp hơn → giảm điểm
+- Nếu vượt → tăng điểm
+- Đánh giá theo mức độ phù hợp (0-10)
+
+⚠️ KHÔNG:
+- Không bịa thông tin
+- Không kết luận sai nếu thiếu dữ liệu
+- Không đánh giá kiểu đạt/không đạt
+
+👉 Trả về HTML đẹp, có màu sắc, icon, giữ format rõ ràng
+`;
 
         // Gọi AI Groq SDK
         // const result = await client.generate({

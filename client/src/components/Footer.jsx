@@ -168,11 +168,11 @@ function Footer() {
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                         <div className="text-center md:text-left">
                             <p className="text-gray-400 text-sm">
-                                © 2024 <span className="text-red-400 font-semibold">CellphoneS</span>. Tất cả quyền được
-                                bảo lưu.
+                                © 2026 <span className="text-red-400 font-semibold">KB Mobile Shop</span>. Tất cả quyền
+                                được bảo lưu.
                             </p>
                             <p className="text-gray-500 text-xs mt-1">
-                                Địa chỉ: 222/1/24 Điện Biên Phủ, P.Võ Thị Sáu, Q.3, TP.HCM
+                                Địa chỉ: Số 98 Phố Dương Quảng Hàm, Phường Nghĩa Đô, TP. Hà Nội
                             </p>
                         </div>
 

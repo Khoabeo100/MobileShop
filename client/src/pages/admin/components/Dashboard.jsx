@@ -152,7 +152,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            Bảng Điều Khiển
+                            Bảng điều khiển
                         </h1>
                         <p className="text-slate-600 mt-2 flex items-center">
                             <Sparkles className="w-4 h-4 mr-2 text-amber-500" />
@@ -208,7 +208,7 @@ const Dashboard = () => {
                 <div className="lg:col-span-2 bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h3 className="text-xl font-semibold text-slate-800">Biểu Đồ Doanh Thu Theo Tháng</h3>
+                            <h3 className="text-xl font-semibold text-slate-800">Biểu đồ doanh thu theo tháng</h3>
                             <p className="text-slate-500 text-sm mt-1">Phân tích chi tiết doanh thu và lợi nhuận</p>
                         </div>
                     </div>
@@ -260,7 +260,7 @@ const Dashboard = () => {
                 {/* Top Products */}
                 <div className="bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-semibold text-slate-800">Top Sản Phẩm Bán Chạy Nhất</h3>
+                        <h3 className="text-xl font-semibold text-slate-800">Top sản phẩm bán chạy nhất</h3>
                     </div>
                     <div className="h-48 mb-6">
                         <ResponsiveContainer width="100%" height="100%">
@@ -303,7 +303,7 @@ const Dashboard = () => {
             <div className="bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-xl font-semibold text-slate-800">Danh Sách Đơn Hàng Mới Nhất</h3>
+                        <h3 className="text-xl font-semibold text-slate-800">Danh sách đơn hàng mới nhất</h3>
                         <p className="text-slate-500 text-sm mt-1">Theo dõi và quản lý các giao dịch gần đây</p>
                     </div>
                 </div>
