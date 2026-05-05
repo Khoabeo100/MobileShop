@@ -1,39 +1,62 @@
+const path = require('path');
 const { google } = require('googleapis');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
-// OAuth2 config
+// Email config
+const EMAIL_USER = process.env.USER_EMAIL;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
+const SMTP_PORT = Number(process.env.SMTP_PORT || 465);
+const SMTP_SECURE = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : true;
+
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
-const EMAIL_USER = process.env.USER_EMAIL;
 
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
 const SendMailForgotPassword = async (email, otp) => {
     try {
-        // Lấy access token từ refresh token
-        const { token: accessToken } = await oAuth2Client.getAccessToken();
-
-        if (!accessToken) {
-            console.error('❌ Không lấy được access token');
-            return;
+        if (!EMAIL_USER) {
+            throw new Error('Thiếu USER_EMAIL trong biến môi trường');
         }
 
-        // Tạo transport gửi mail
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: EMAIL_USER,
-                clientId: CLIENT_ID,
-                clientSecret: CLIENT_SECRET,
-                refreshToken: REFRESH_TOKEN,
-                accessToken: accessToken,
-            },
-        });
+        let transporter;
+        if (EMAIL_PASSWORD) {
+            transporter = nodemailer.createTransport({
+                host: SMTP_HOST,
+                port: SMTP_PORT,
+                secure: SMTP_SECURE,
+                auth: {
+                    user: EMAIL_USER,
+                    pass: EMAIL_PASSWORD,
+                },
+            });
+        } else {
+            if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI || !REFRESH_TOKEN) {
+                throw new Error('Thiếu cấu hình OAuth2 cho gửi mail Gmail');
+            }
+
+            const { token: accessToken } = await oAuth2Client.getAccessToken();
+            if (!accessToken) {
+                throw new Error('Không lấy được access token từ OAuth2');
+            }
+
+            transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    type: 'OAuth2',
+                    user: EMAIL_USER,
+                    clientId: CLIENT_ID,
+                    clientSecret: CLIENT_SECRET,
+                    refreshToken: REFRESH_TOKEN,
+                    accessToken: accessToken,
+                },
+            });
+        }
 
         // Cấu hình email
         const mailOptions = {
@@ -129,8 +152,10 @@ const SendMailForgotPassword = async (email, otp) => {
 
         const info = await transporter.sendMail(mailOptions);
         console.log('✅ Email đặt lại mật khẩu đã gửi:', info.messageId);
+        return info;
     } catch (error) {
         console.error('❌ Lỗi khi gửi email đặt lại mật khẩu:', error);
+        throw error;
     }
 };
 

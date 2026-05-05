@@ -266,28 +266,22 @@ class controllerUser {
             });
 
             const saltRounds = 10;
+            const hash = await bcrypt.hash(otp, saltRounds);
 
-            bcrypt.hash(otp, saltRounds, async function (err, hash) {
-                if (err) {
-                    console.error('Error hashing OTP:', err);
-                } else {
-                    await modelOtp.create({
-                        email: user.email,
-                        otp: hash,
-                    });
-                    await sendMailForgotPassword(email, otp);
-
-                    return res
-                        .setHeader('Set-Cookie', [
-                            `tokenResetPassword=${token};  Secure; Max-Age=300; Path=/; SameSite=Strict`,
-                        ])
-                        .status(200)
-                        .json({ message: 'Gửi thành công !!!' });
-                }
+            await modelOtp.create({
+                email: user.email,
+                otp: hash,
             });
+
+            await sendMailForgotPassword(email, otp);
+
+            return res
+                .setHeader('Set-Cookie', [`tokenResetPassword=${token};  Secure; Max-Age=300; Path=/; SameSite=Strict`])
+                .status(200)
+                .json({ message: 'Gửi thành công !!!' });
         } catch (error) {
             console.error('Error forgot password:', error);
-            return res.status(500).json({ message: 'Có lỗi xảy ra' });
+            return res.status(500).json({ message: error?.message || 'Có lỗi xảy ra' });
         }
     }
 
@@ -646,10 +640,10 @@ class controllerUser {
                             order.status === 'success'
                                 ? 'Hoàn thành'
                                 : order.status === 'shipping'
-                                ? 'Đang giao'
-                                : order.status === 'confirm'
-                                ? 'Đang xử lý'
-                                : 'Chờ xử lý',
+                                  ? 'Đang giao'
+                                  : order.status === 'confirm'
+                                    ? 'Đang xử lý'
+                                    : 'Chờ xử lý',
                         avatar: order.fullName
                             .split(' ')
                             .map((name) => name[0])

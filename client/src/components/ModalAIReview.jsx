@@ -32,7 +32,7 @@ function ModalAIReview({ isOpen, idProductReview, setIsOpenModalAIReview }) {
     const purposes = [
         {
             id: 'gaming',
-            label: 'Chơi Game',
+            label: 'Chơi game',
             icon: Gamepad2,
             gradient: 'from-red-500 via-pink-500 to-purple-500',
             description: 'PUBG, Liên Quân, Genshin Impact',
@@ -41,7 +41,7 @@ function ModalAIReview({ isOpen, idProductReview, setIsOpenModalAIReview }) {
         },
         {
             id: 'office',
-            label: 'Công Việc',
+            label: 'Công việc',
             icon: Briefcase,
             gradient: 'from-blue-500 via-cyan-500 to-teal-500',
             description: 'Gọi video, email, chat, quản lý file',
@@ -50,7 +50,7 @@ function ModalAIReview({ isOpen, idProductReview, setIsOpenModalAIReview }) {
         },
         {
             id: 'camera',
-            label: 'Nhiếp Ảnh',
+            label: 'Nhiếp ảnh',
             icon: Camera,
             gradient: 'from-purple-500 via-indigo-500 to-blue-500',
             description: 'Chụp ảnh, chỉnh sửa, lưu giữ kỷ niệm',
@@ -59,7 +59,7 @@ function ModalAIReview({ isOpen, idProductReview, setIsOpenModalAIReview }) {
         },
         {
             id: 'video',
-            label: 'Quay Video',
+            label: 'Quay video',
             icon: Video,
             gradient: 'from-orange-500 via-red-500 to-pink-500',
             description: 'TikTok, YouTube, Vlog, dựng clip',
@@ -68,7 +68,7 @@ function ModalAIReview({ isOpen, idProductReview, setIsOpenModalAIReview }) {
         },
         {
             id: 'social',
-            label: 'Mạng Xã Hội',
+            label: 'Mạng xã hội',
             icon: Globe,
             gradient: 'from-green-500 via-emerald-500 to-teal-500',
             description: 'Facebook, Instagram, TikTok, Zalo',
@@ -77,7 +77,7 @@ function ModalAIReview({ isOpen, idProductReview, setIsOpenModalAIReview }) {
         },
         {
             id: 'student',
-            label: 'Học Tập',
+            label: 'Học tập',
             icon: GraduationCap,
             gradient: 'from-yellow-500 via-amber-500 to-orange-500',
             description: 'Học online, Google Meet, tra cứu tài liệu',
@@ -132,7 +132,7 @@ function ModalAIReview({ isOpen, idProductReview, setIsOpenModalAIReview }) {
                             <Brain size={32} className="text-white" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold mb-1">AI Review Điện Thoại</h2>
+                            <h2 className="text-xl font-bold mb-1">AI đánh giá điện thoại</h2>
                             <p className="text-blue-100 text-sm">
                                 Để AI phân tích và tư vấn smartphone phù hợp nhất cho bạn
                             </p>
@@ -254,7 +254,7 @@ function ModalAIReview({ isOpen, idProductReview, setIsOpenModalAIReview }) {
                             <Brain size={32} className="text-white" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold mb-1">Kết Quả Phân Tích AI</h2>
+                            <h2 className="text-xl font-bold mb-1">Kết quả phân tích AI</h2>
                             <p className="text-blue-100 text-sm">
                                 {dataReview.productName} - Mục đích: {dataReview.purpose}
                             </p>

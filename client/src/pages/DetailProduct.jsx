@@ -262,7 +262,7 @@ function DetailProduct() {
                                         className="flex items-center justify-center h-[50px] w-full !bg-blue-600 !text-white !border-none !rounded-lg shadow-md hover:!bg-blue-700 hover:shadow-lg transition-all"
                                         onClick={handleOpenModalAIReview}
                                     >
-                                        AI REVIEW
+                                        Đánh giá AI 
                                     </Button>
 
                                     <Button

@@ -119,12 +119,27 @@ async function analyzeProductForPurpose(reviewData) {
             }
         }
 
+        const productImageUrl = (() => {
+            if (!productData.imagesProduct) return null;
+            const images =
+                typeof productData.imagesProduct === 'string'
+                    ? productData.imagesProduct
+                          .split(',')
+                          .map((img) => img.trim())
+                          .filter(Boolean)
+                    : Array.isArray(productData.imagesProduct)
+                      ? productData.imagesProduct.map((img) => String(img).trim()).filter(Boolean)
+                      : [];
+            if (!images.length) return null;
+            return `http://localhost:3000/uploads/products/${encodeURI(images[0])}`;
+        })();
+
         // HTML hiển thị sản phẩm
         const productHTML = `
             <div style="border:2px solid #007bff;padding:16px;margin:12px 0;border-radius:12px;background:linear-gradient(135deg,#f8f9ff,#e8f0ff);">
                 ${
-                    productData.imagesProduct
-                        ? `<img src="http://localhost:3000/uploads/products/${productData.imagesProduct.split(',')[0]}" 
+                    productImageUrl
+                        ? `<img src="${productImageUrl}" 
                                alt="${productData.nameProduct}" 
                                style="width:100px;height:100px;object-fit:cover;border-radius:8px;float:left;margin-right:16px;">`
                         : ''

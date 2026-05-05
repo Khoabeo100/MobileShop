@@ -117,7 +117,7 @@ function ProductCard({ data }) {
 
                     <div onClick={handleOpenModalAIReview} className="flex justify-center">
                         <button className="cursor-pointer px-6 py-2 bg-blue-600 text-white font-semibold rounded-2xl shadow-md hover:bg-blue-700 hover:shadow-lg active:scale-95 transition duration-300 ease-in-out">
-                            AI Review
+                            Đánh giá AI
                         </button>
                     </div>
                 </div>
